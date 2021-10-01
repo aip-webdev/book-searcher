@@ -1,8 +1,8 @@
-import colors from "../../utils/colors";
+import colors from '../../utils/colors';
 
 const styles = {
   width: '33%',
-  margin: '5rem 0',
+  marginBottom: '5rem',
   alignSelf: 'center',
   '.MuiOutlinedInput-root': {
     fontSize: '1.5rem',
