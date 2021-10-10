@@ -1,32 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import axios from 'axios'
 import { booksMock } from '../utils/fixtures';
+import {useDispatch, useSelector} from "react-redux";
+import {fetchBooks, fetchBooksFailure, fetchBooksSuccess, resetBooksData} from "../store/actions";
 
-export default function useBookSearch(query, pageNumber, offline) {
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const [books, setBooks] = useState([])
-  const [hasMore, setHasMore] = useState(false)
-  const [count, setCount] = useState(0);
+export default function useBookSearch() {
+  const dispatch = useDispatch();
+
+  const offline = useSelector(state => state.offlineMode);
+  const query = useSelector(state => state.query);
+  const pageNumber = useSelector(state => state.pageNumber);
+
+  const loading = useSelector(state => state.booksData.loading);
+  const error = useSelector(state => state.booksData.error);
+  const books = useSelector(state => state.booksData.books);
+  const hasMore = useSelector(state => state.booksData.hasMore);
+  const count = useSelector(state => state.booksData.count);
 
   useEffect(() => {
-    setBooks([])
-    setCount(0)
-    setHasMore(false)
+    dispatch(resetBooksData())
   }, [query, offline])
 
   useEffect(() => {
-    setLoading(true)
-    setError(false)
+    dispatch(fetchBooks())
     let cancel
 
     if (offline) {
       setTimeout(() => {
-        setBooks(prevBooks => [...prevBooks, ...booksMock])
-        setLoading(false)
-        setHasMore(true)
-        setCount(100000)
-        setError(false)
+        dispatch(fetchBooksSuccess(booksMock, false, true, 10000, false));
       }, 500)
     } else {
       axios({
@@ -43,17 +44,13 @@ export default function useBookSearch(query, pageNumber, offline) {
               author: book['author_name']
             }
           )) : [];
-
-        setBooks(prevBooks => {
-          return [...new Set([...prevBooks, ...editedBooks])]
-        })
-        setCount(res.data.numFound || 0)
-        setHasMore(res.data.docs.length > 0)
-        setLoading(false)
+          return [editedBooks, false, res.data.docs.length > 0, res.data.numFound || 0, false]
+      })
+      .then((booksData) => {
+        dispatch(fetchBooksSuccess(booksData));
       }).catch(e => {
         if (axios.isCancel(e)) return
-        setError(true)
-        setLoading(false)
+        dispatch(fetchBooksFailure())
       })
       return () => cancel()
     }

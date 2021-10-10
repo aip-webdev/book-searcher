@@ -8,9 +8,30 @@ import BookCard from '../BookCard/BookCard';
 import MoreResultsButton from '../MoreResultsButton/MoreResultsButton';
 import Container from '@mui/material/Container';
 import Search from '../Search/Search';
+import {useDispatch, useSelector} from "react-redux";
+import {setPageNumber, setQuery} from "../../store/actions";
 
-const HomePage = ({ query, count, handleSearch, books, hasMore, loading, handleClick, offline }) => {
+const HomePage = () => {
   const { list, listItem, container, total } = styles;
+  const dispatch = useDispatch();
+  const pageNumber = useSelector(state => state.pageNumber);
+  const offline = useSelector(state => state.offlineMode);
+  const query = useSelector(state => state.query);
+
+  const loading = useSelector(state => state.booksData.loading);
+
+  const books = useSelector(state => state.booksData.books);
+  const hasMore = useSelector(state => state.booksData.hasMore);
+  const count = useSelector(state => state.booksData.count);
+
+  const handleSearch = (e) => {
+    dispatch(setQuery(e.target.value));
+    dispatch(setPageNumber(1));
+  }
+
+  const handleClick = () => {
+    dispatch(setPageNumber(pageNumber + 1));
+  }
 
   return (
     <Container
