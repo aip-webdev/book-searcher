@@ -1,40 +1,30 @@
 import { useEffect } from 'react'
 import axios from 'axios'
 import { booksMock } from '../utils/fixtures';
-import {useDispatch, useSelector} from "react-redux";
-import {fetchBooks, fetchBooksFailure, fetchBooksSuccess, resetBooksData} from "../store/actions";
+import {useAppStore} from "./useAppStore";
+import {fetchBooks, fetchBooksFailure, fetchBooksSuccess, resetBooksData} from "../context/actions";
 
 export default function useBookSearch() {
-  const dispatch = useDispatch();
-
-  const offline = useSelector(state => state.offlineMode);
-  const query = useSelector(state => state.query);
-  const pageNumber = useSelector(state => state.pageNumber);
-
-  const loading = useSelector(state => state.booksData.loading);
-  const error = useSelector(state => state.booksData.error);
-  const books = useSelector(state => state.booksData.books);
-  const hasMore = useSelector(state => state.booksData.hasMore);
-  const count = useSelector(state => state.booksData.count);
+  const [{query, pageNumber, offlineMode, booksData}, dispatch] = useAppStore();
 
   useEffect(() => {
     dispatch(resetBooksData())
-  }, [query, offline])
+  }, [query, offlineMode])
 
   useEffect(() => {
     dispatch(fetchBooks())
     let cancel
 
-    if (offline) {
+    if (offlineMode) {
       setTimeout(() => {
-        dispatch(fetchBooksSuccess(booksMock, false, true, 10000, false));
+        dispatch(fetchBooksSuccess([booksMock, false, true, 10000, false]));
       }, 500)
     } else {
       axios({
         method: 'GET',
         timeout: 5000,
         url: 'https://openlibrary.org/search.json',
-        params: { q: query, page: pageNumber, limit: 10 },
+        params: { q: query, page: pageNumber, limit: 10*pageNumber },
         cancelToken: new axios.CancelToken(c => cancel = c)
       }).then(res => {
         const editedBooks = res.data.docs.length > 0 ?
@@ -46,15 +36,15 @@ export default function useBookSearch() {
           )) : [];
           return [editedBooks, false, res.data.docs.length > 0, res.data.numFound || 0, false]
       })
-      .then((booksData) => {
-        dispatch(fetchBooksSuccess(booksData));
+      .then((booksRes) => {
+        dispatch(fetchBooksSuccess(booksRes));
       }).catch(e => {
         if (axios.isCancel(e)) return
         dispatch(fetchBooksFailure())
       })
       return () => cancel()
     }
-  }, [query, pageNumber, offline])
-
+  }, [query, pageNumber, offlineMode])
+  let { loading, error, books, hasMore, count } = booksData
   return { loading, error, books, hasMore, count }
 }

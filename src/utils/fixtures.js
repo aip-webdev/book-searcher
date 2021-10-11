@@ -774,5 +774,5 @@ export const booksMock = [
     "author_facet": [
       "OL270485A Jakub Arbes"
     ]
-  }
+  },
 ];

@@ -5,22 +5,8 @@ import {
     SET_PAGE_NUMBER,
     RESET_BOOKS_DATA, FETCH_BOOKS, FETCH_BOOKS_SUCCESS, FETCH_BOOKS_FAILURE,
 } from "../actions";
-import {checkForOfflineMode} from "../../utils/utils";
 
-export const initialState = {
-    query: '',
-    pageNumber: 1,
-    offlineMode: checkForOfflineMode(),
-    booksData: {
-        loading: true,
-        error: false,
-        books: [],
-        hasMore: false,
-        count: 0
-    },
-}
-
-export const rootReducer = (state = initialState, action) => {
+export function rootReducer(state, action) {
     switch (action.type) {
         case SET_QUERY:
             return merge(state, {query: action.payload});
