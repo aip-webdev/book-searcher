@@ -6,6 +6,7 @@ import { indexTemplate } from "./indexTemplate";
 
 const app = express();
 app.use('/static', express.static('./dist/client'));
+app.use('/img-src', express.static('./dist/img-src'));
 
 app.get('/', async (req, res) => {
     await res.send(

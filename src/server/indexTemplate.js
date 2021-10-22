@@ -3,19 +3,19 @@ export const indexTemplate = ( content ) =>`
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="/static/favicon.ico" />
+    <link rel="icon" href="/img-src/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="Web site created using create-react-app"
     />
-    <link rel="apple-touch-icon" href="/static/logo192.png" />
+    <link rel="apple-touch-icon" href="/img-src/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="/static/manifest.json" />
+    <link rel="manifest" href="/img-src/manifest.json" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the \`public\` folder during the build.
@@ -29,7 +29,7 @@ export const indexTemplate = ( content ) =>`
   </head>
   <script src="/static/client.js" type="application/javascript"></script>
   <body>
-    <section id="root">${content}</section>
+    <div id="root">${content}</div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

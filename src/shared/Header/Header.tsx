@@ -8,10 +8,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import {useAppStore} from "../../hooks/useAppStore";
 import {setQuery, switchOfflineMode} from "../../context/actions";
+import {setModeToStorage} from "../../utils/getModeFromStorage";
 
 const Header = () => {
   const [state, dispatch] = useAppStore();
   const handleChange = () => {
+    setModeToStorage(`${!state.offlineMode}`)
     dispatch(switchOfflineMode(!state.offlineMode))
     dispatch( setQuery(''))
   }

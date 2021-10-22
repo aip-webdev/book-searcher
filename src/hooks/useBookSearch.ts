@@ -4,12 +4,12 @@ import {booksMock} from '../utils/lists/fixtures';
 import {useAppStore} from "./useAppStore";
 import {fetchBooks, fetchBooksFailure, fetchBooksSuccess, resetBooksData} from "../context/actions";
 import {IBookProps, IBookResProps} from "../../types/global";
+import {o} from "ramda";
 
 export default function useBookSearch() {
   const [{query, pageNumber, offlineMode, booksData}, dispatch] = useAppStore();
-
+  useEffect(() => {  dispatch(resetBooksData()) }, [query, offlineMode]);
   useEffect(() => {
-    dispatch(resetBooksData());
     dispatch(fetchBooks())
     let cancel: Canceler;
 
@@ -24,10 +24,8 @@ export default function useBookSearch() {
       setTimeout(() => {
         dispatch(fetchBooksSuccess({
           books: bookList,
-          loading: false,
           hasMore: booksMock.length > 10*pageNumber,
           count: 30,
-          error: false
         }));
       }, 500)
 
@@ -46,10 +44,10 @@ export default function useBookSearch() {
               author: book.author_name[0],
             }
           )) : [];
-          return [editedBooks, false, res.data.docs.length > 0, res.data.numFound || 0, false]
+          return [editedBooks, res.data.docs.length > 0, res.data.numFound || 0]
       })
-      .then(([books, loading, hasMore, count, error]): void => {
-        return dispatch(fetchBooksSuccess({books, loading, hasMore, count, error}));
+      .then(([books, hasMore, count]): void => {
+        return dispatch(fetchBooksSuccess({books, hasMore, count}));
       }).catch(e => {
         if (axios.isCancel(e)) return
         dispatch(fetchBooksFailure())

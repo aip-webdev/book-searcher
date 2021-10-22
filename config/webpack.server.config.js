@@ -44,17 +44,6 @@ module.exports = {
                 test: GLOBAL_CSS_REGEXP,
                 use: ['css-loader', 'sass-loader'],
             },
-            {
-                test: /\.(png|jpg|gif|svg|ico|[manifest].json)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            limit: 8192
-                        }
-                    }
-                ]
-            }
         ],
     },
     optimization: {

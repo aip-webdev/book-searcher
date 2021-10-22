@@ -1,6 +1,4 @@
 /.idea
 /node_modules/
-/src/cache/
 events.json
-/dist/server/
-/dist/client/
+/src/cache/

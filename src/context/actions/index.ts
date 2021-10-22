@@ -1,4 +1,4 @@
-import {IBooksData} from "../../../types/global";
+import {IBookProps, IBooksData} from "../../../types/global";
 
 
 export const SET_QUERY = 'SET_QUERY';
@@ -64,19 +64,13 @@ export const FETCH_BOOKS = 'FETCH_BOOKS';
 
 export interface FetchBooksAction {
     type: typeof FETCH_BOOKS,
-    payload: IBooksData
+    payload: boolean
 }
 
 export function fetchBooks(): FetchBooksAction {
     return {
         type: FETCH_BOOKS,
-        payload: {
-            books: [],
-            hasMore: false,
-            count: 0,
-            loading: true,
-            error: false,
-        }
+        payload: true
     }
 }
 
@@ -87,15 +81,21 @@ export interface FetchBooksSuccessAction {
     payload: IBooksData
 }
 
-export function fetchBooksSuccess({books, loading, hasMore, count, error} : IBooksData): FetchBooksSuccessAction {
+interface IFetchBookSuccessProps {
+    books: IBookProps[];
+    hasMore: boolean;
+    count: number;
+}
+
+export function fetchBooksSuccess({books, hasMore, count} : IFetchBookSuccessProps): FetchBooksSuccessAction {
     return {
         type: FETCH_BOOKS_SUCCESS,
         payload: {
             books:books,
-            loading: loading,
+            loading: false,
             hasMore: hasMore,
             count: count,
-            error: error
+            error: false
         }
     }
 }
