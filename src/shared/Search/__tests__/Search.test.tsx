@@ -21,9 +21,9 @@ describe('Search',  () => {
             </AppProvider>)
         expect(getByLabelText(/Type title of the book/i)).toHaveProperty('value', '')
         await act(async () => {
-            await userEvent.type(getByLabelText(/Type title of the book/i), 'r')
+            await userEvent.type(getByLabelText(/Type title of the book/i), 'roll')
         })
-        expect(getByLabelText(/Type title of the book/i)).toHaveProperty('value', 'r')
+        expect(getByLabelText(/Type title of the book/i)).toHaveProperty("value", 'roll')
         debug();
     })
 })
