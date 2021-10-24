@@ -18,7 +18,7 @@ export default function useScrollEventToLoadData(ref: React.RefObject<HTMLElemen
                 // @ts-ignore
                 !!listHeight && !offlineMode ? htmlEl.style.height = `${htmlEl.offsetHeight - listHeight/pageNumber + (listHeight/10/pageNumber)*booksData.count}px`:
                     // @ts-ignore
-                    htmlEl.style.height = `${5000}px`
+                    htmlEl.style.height = `${heightWithoutList + (5000 - heightWithoutList)/30*booksData.count}px`
             }, 0);
         }
 
