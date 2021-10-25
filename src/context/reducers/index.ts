@@ -21,7 +21,7 @@ const rootReducer: Reducer<IStateData, MyAction> = (state, action) => {
         case SET_PAGE_NUMBER:
             return merge(state, {pageNumber: action.payload})
         case RESET_BOOKS_DATA:
-            return merge(state, {booksData: action.payload})
+            return merge(state, {pageNumber: 1, booksData: action.payload})
         case FETCH_BOOKS:
             //@ts-ignore
             return merge(state, {booksData: merge(state.booksData, {

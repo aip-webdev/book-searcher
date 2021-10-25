@@ -5,13 +5,13 @@ import ListItem from "@mui/material/ListItem";
 import BookCard from "../BookCard/BookCard";
 import Box from "@mui/material/Box";
 import {useAppStore} from "../../hooks/useAppStore";
-import useScrollEventToLoadData from "../../hooks/useScrollEventToLoadData";
+import useScrollEventToLoad from "../../hooks/useScrollEventToLoad";
 
 const BooksBox = () => {
     const { list, listItem } = styles;
     const [{booksData}] = useAppStore();
     const ref = useRef(null);
-    useScrollEventToLoadData(ref);
+    useScrollEventToLoad(ref);
 
     return (
         <Box>
