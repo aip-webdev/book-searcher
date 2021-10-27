@@ -4,12 +4,14 @@ import {booksMock} from '../utils/lists/fixtures';
 import {useAppStore} from "./useAppStore";
 import {fetchBooks, fetchBooksFailure, fetchBooksSuccess, resetBooksData} from "../context/actions";
 import {IBookProps, IBookResProps} from "../../types/global";
-import {o} from "ramda";
+import {getWindowGlobal} from "../utils/getWindowGlobal";
+import {setHeightOfPage} from "../utils/setHeightOfPage";
 
 export default function useBookSearch() {
   const [{query, pageNumber, offlineMode, booksData}, dispatch] = useAppStore();
   useEffect(() => {  dispatch(resetBooksData()) }, [query, offlineMode]);
   useEffect(() => {
+    if (booksData.loading) return;
     dispatch(fetchBooks())
     let cancel: Canceler;
 
@@ -30,29 +32,35 @@ export default function useBookSearch() {
       }, 500)
 
     } else {
-      axios({
-        method: 'GET',
-        timeout: 5000,
-        url: 'https://openlibrary.org/search.json',
-        params: { q: query, page: pageNumber, limit: 10*pageNumber },
-        cancelToken: new axios.CancelToken(c => cancel = c)
-      }).then(res => {
-        const editedBooks: IBookProps [] | [] = res.data.docs.length > 0 ?
-          res.data.docs.map((book: IBookResProps) => (
-            {
-              title: book.title,
-              author: book.author_name[0],
-            }
-          )) : [];
-          return [editedBooks, res.data.docs.length > 0, res.data.numFound || 0]
-      })
-      .then(([books, hasMore, count]): void => {
-        return dispatch(fetchBooksSuccess({books, hasMore, count}));
-      }).catch(e => {
-        if (axios.isCancel(e)) return
-        dispatch(fetchBooksFailure())
-      })
-      return () => cancel()
+      const fetch = async () => {
+        try {
+          await axios({
+            method: 'GET',
+            timeout: 5000,
+            url: 'https://openlibrary.org/search.json',
+            params: { q: query, page: pageNumber, limit: 10*pageNumber },
+            cancelToken: new axios.CancelToken(c => cancel = c)
+          }).then(res => {
+            const editedBooks: IBookProps [] | [] = res.data.docs.length > 0 ?
+                res.data.docs.map((book: IBookResProps) => (
+                    {
+                      title: book.title,
+                      author: book.author_name[0],
+                    }
+                )) : [];
+            return [editedBooks, res.data.docs.length > 0, res.data.numFound || 0]
+          })
+              .then(([books, hasMore, count]): void => {
+                return dispatch(fetchBooksSuccess({books, hasMore, count}));
+              })
+        } catch (e) {
+          if (axios.isCancel(e)) return
+          dispatch(fetchBooksFailure())
+          window.scroll(0, 0)
+          setHeightOfPage(window.document.body.clientHeight);
+        }
+      }
+      fetch().then(() => cancel())
     }
   }, [query, pageNumber, offlineMode])
 

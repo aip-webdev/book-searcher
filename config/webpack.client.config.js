@@ -1,5 +1,4 @@
 const path = require('path');
-const {IgnorePlugin} = require("webpack");
 const { HotModuleReplacementPlugin } = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
@@ -8,6 +7,7 @@ const IS_DEV = NODE_ENV === 'development';
 const IS_PROD = NODE_ENV === 'production';
 const GLOBAL_CSS_REGEXP = /\.global\.css$/;
 const DEV_PLUGINS = [new CleanWebpackPlugin(), new HotModuleReplacementPlugin()];
+
 function setupDevtool() {
     if (IS_DEV) return 'eval';
     if (IS_PROD) return false;

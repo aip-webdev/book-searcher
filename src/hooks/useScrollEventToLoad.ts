@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {useAppStore} from "./useAppStore";
 import {setPageNumber} from "../context/actions";
 import {setHeightOfPage} from "../utils/setHeightOfPage";
@@ -6,42 +6,33 @@ import {getWindowGlobal} from "../utils/getWindowGlobal";
 
 export default function useScrollEventToLoad(ref: React.RefObject<HTMLElement>) {
     const windowGlobal = getWindowGlobal();
-    let handlerPermission = true;
-    const [{ pageNumber, booksData}, dispatch] = useAppStore();
-    const heightWithoutList = 220;
-    const [listHeight, setListHeight] = useState(0)
+    const [{ pageNumber, booksData }, dispatch] = useAppStore();
 
-    useEffect(()=> {
-       if (windowGlobal) {
-           if (!ref?.current?.clientHeight && listHeight === 0) {
-               return setHeightOfPage(windowGlobal.innerHeight);
-           } else if (!!ref.current) {
-               setListHeight(ref.current.clientHeight)
-           }
+    useEffect(() => {
+       if (ref.current?.parentElement && windowGlobal && !booksData.loading && booksData.hasMore) {
            if (booksData.count === 0) {
-               setPageNumber(1)
-               setHeightOfPage(windowGlobal.innerHeight);
+               setPageNumber(1);
+               setHeightOfPage(windowGlobal.document.body.clientHeight);
                return windowGlobal.scroll(0, 0);
            }
-           if (booksData.count > 10 && pageNumber === 1 && !booksData.loading) {
-               setHeightOfPage(heightWithoutList + (listHeight / 10 / pageNumber) * booksData.count)
+           if (pageNumber === 1 && booksData.count > 10){
+               setHeightOfPage(ref.current.parentElement.offsetHeight/10/pageNumber*booksData.count + 240);
            }
-
-           const handleScroll = () => {
-               if (handlerPermission && (listHeight && listHeight !== 0) && !booksData.loading && booksData.hasMore) {
-                   if((heightWithoutList + listHeight - windowGlobal.innerHeight - windowGlobal.scrollY) <= 0) {
-                       handlerPermission = false;
-                       dispatch(setPageNumber(pageNumber + 1));
-                       setTimeout(() => {handlerPermission = true}, 500)
-                   }
+           const observer = new IntersectionObserver((entries) => {
+               if (entries[0].isIntersecting) {
+                   dispatch(setPageNumber(pageNumber + 1));
                }
-           };
-           document.addEventListener('scroll', handleScroll);
-
+           }, {rootMargin: '50px'});
+           if (ref.current ) {
+               observer.observe(ref.current);
+           }
            return () => {
-               document.removeEventListener('scroll', handleScroll);
+               if (ref.current) {
+                   observer.unobserve(ref.current);
+               }
            }
        }
     })
-    return [pageNumber]
+
+    return [ref.current, pageNumber]
 }

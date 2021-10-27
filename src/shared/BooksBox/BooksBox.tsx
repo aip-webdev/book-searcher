@@ -15,9 +15,9 @@ const BooksBox = () => {
 
     return (
         <Box>
-            <List ref={ref}
+            <List
                 //@ts-ignore
-                  sx={list}>
+                sx={list}>
                 {booksData.books?.map((book: { title: any; author: any; }, index: any) => {
                     const { title, author } = book;
                     return (
@@ -26,6 +26,7 @@ const BooksBox = () => {
                         </ListItem>
                     )
                 })}
+                <div ref={ref} />
                 {booksData.loading &&
                 //@ts-ignore
                 <List sx={styles.list}>
