@@ -4,7 +4,6 @@ import {booksMock} from '../utils/lists/fixtures';
 import {useAppStore} from "./useAppStore";
 import {fetchBooks, fetchBooksFailure, fetchBooksSuccess, resetBooksData} from "../context/actions";
 import {IBookProps, IBookResProps} from "../../types/global";
-import {getWindowGlobal} from "../utils/getWindowGlobal";
 import {setHeightOfPage} from "../utils/setHeightOfPage";
 
 export default function useBookSearch() {
